@@ -1,65 +1,114 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, ChangeEvent} from 'react';
+import { InputType } from 'zlib';
+
+let timer: any;
+
+function App() {
+
+  const intervalTime=1000;
+  const timerLimit=60;
+  const max=10;
+
+  const [count,setCount]=useState(timerLimit);
+  const [randNum,setRandNum]=useState(0);
+  const [userInput,setUserInput]=useState(0);
+  const [gameOver, setGameOver]=useState(true);
+
+  const timeOutFlag="Time Is Up!!";
+  const wonFlag="You Won!!";
+
+  if(count<=0 || userInput===randNum){
+    endGame();
+  } 
+  let feedback;
+  if(count<=0){
+    feedback=timeOutFlag;
+  }
+  else if(!gameOver){
+    if(userInput>randNum){
+      feedback="Too High";
+    }
+    else if(userInput<randNum){
+      feedback="Too Low";
+    }
+    else if(userInput===randNum){
+      feedback=wonFlag;
+    }
+  }
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+       <header>
+        <h1>
+          Random Guess
+        </h1>
+      </header>
+      <main>
+        <header>
+          <h2>
+            Main Game
+          </h2>
+        </header>
+        <p>{feedback}</p>
+        <p>{count}</p>
+        <div className="row">
+          <div className="col">
+            <label htmlFor='userInputBox'>
+              Number Guess:
+            </label>
+          </div>
+          <div className="col">
+              <input type="number" id="userInputBox" name="userInputBox" onChange={provideFeedback} value={userInput} />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <hr/>
+        <div className="row">
+          <div className="col">
+            <button onClick={initGame}>Start Game</button>
+          </div>
+          <div className="col">
+            <button>End Game</button>
+          </div>
         </div>
       </main>
-    </div>
+    </>
+   
   );
+
+  function initGame(){
+    console.log("starting game....");
+    resetGame();
+    setGameOver(false);
+    timer=setInterval(countdown,intervalTime);
+  }
+
+  function countdown(){
+    setCount(count=>count-1);
+  }
+
+  function setRandomNumber(){
+    setRandNum(Math.floor(max*Math.random()));
+  }
+
+  function setCounter(){
+    setCount(timerLimit);
+  }
+
+  function resetGame(){
+    setCounter();
+    setRandomNumber();
+  }
+
+  function endGame(){
+    clearInterval(timer);
+  }
+
+  function provideFeedback(e:ChangeEvent<HTMLInputElement>){
+    setUserInput(parseInt(e.currentTarget.value));
+  }
+
 }
+
+export default App;
+
