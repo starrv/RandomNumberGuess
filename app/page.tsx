@@ -7,88 +7,89 @@ let timer: any;
 function App() {
 
   const intervalTime=1000;
-  const timerLimit=10;
+  const timerLimit=60;
   const max=100;
   const min=-100;
 
   const [count,setCount]=useState(timerLimit);
   const [randNum,setRandNum]=useState(0);
-  const [userInput,setUserInput]=useState(0);
+  const [userInput,setUserInput]=useState("0");
 
   const timeOutMsg="Time Is Up!!";
   const wonMsg="You Won!!";
   const tooHighMsg="Too High";
   const tooLowMsg="Too Low";
-  const rangeErrorMsg= "An error has occurred.  Please contact support.";
+  const rangeErrorMsg= `Random number must be between ${min} and ${max} inclusive`;
+  let feedback;
 
   if(randNum<min || randNum>max){
     throw RangeError(rangeErrorMsg);
   }
-
-  if(count<=0 || userInput===randNum){
+  
+  if(count<=0 || parseInt(userInput)===randNum){
     endGame();
   } 
-  let feedback;
   if(count<=0){
     feedback=timeOutMsg;
   }
   else{
     if(count!==timerLimit){
-      if(userInput>randNum){
+      if(parseInt(userInput)>randNum){
         feedback=tooHighMsg;
       }
-      else if(userInput<randNum){
+      else if(parseInt(userInput)<randNum){
         feedback=tooLowMsg;
       }
-      else if(userInput===randNum){
+      else if(parseInt(userInput)===randNum){
         feedback=wonMsg;
       }
     }
+    else{
+      startGame();
+    }
   }
-
+  
   return (
-    <>
-       <header>
-        <h1>
+    <div className="text-center">
+       <header className="mb-4 bg-orange-100">
+        <h1 className="text-6xl mx-auto font-bold text-center mb-4 p-4">
           Random Guess
         </h1>
       </header>
-      <main>
-        <header>
-          <h2>
+      <main className="m-4">
+        <header className="m-4">
+          <h2 className="text-2xl m-2">
             Guess the interger from {min} to {max}
           </h2>
         </header>
-        <p>{feedback}</p>
-        <p>{count}</p>
-        <div className="row">
-          <div className="col">
+        <p className="m-2">{feedback}</p>
+        <p className="m-2">{count}</p>
+        <div className="row m-2">
+          <div className="col m-2">
             <label htmlFor='userInputBox'>
               Number Guess:
             </label>
           </div>
-          <div className="col">
-              <input type="number" id="userInputBox" name="userInputBox" min={min} max={max} onChange={provideFeedback} value={userInput} />
+          <div className="col m-2">
+              <input className="border rounded-sm text-center m-2 p-2" type="number" id="userInputBox" name="userInputBox" min={min} max={max} onChange={provideFeedback} value={userInput} />
           </div>
         </div>
-        <hr/>
-        <div className="row">
-          <div className="col">
-            <button onClick={initGame}>Start Game</button>
+        <hr className="m-2" />
+        <div className="row m-2">
+          <div className="col m-2">
+            <button className="border rounded-sm bg-green-100 cursor-pointer m-2 p-2" onClick={initGame}>Start</button>
           </div>
-          <div className="col">
-            <button onClick={endGame}>End Game</button>
+          <div className="col m-2">
+            <button className="border rounded-sm bg-red-100 cursor-pointer m-2 p-2" onClick={endGame}>Stop</button>
           </div>
         </div>
       </main>
-    </>
+    </div>
    
   );
 
   function initGame(){
-    console.log("starting game....");
     resetGame();
-    timer=setInterval(countdown,intervalTime);
   }
 
   function countdown(){
@@ -108,13 +109,18 @@ function App() {
     setRandomNumber();
   }
 
+  function startGame(){
+    if(!timer) timer=setInterval(countdown,intervalTime);
+  }
+
   function endGame(){
+    console.log("ending game....");
     clearInterval(timer);
+    timer=undefined;
   }
 
   function provideFeedback(e:ChangeEvent<HTMLInputElement>){
-    console.log(e.currentTarget.value);
-    setUserInput(Number(e.currentTarget.value));
+    setUserInput(e.currentTarget.value);
   }
 
 }
