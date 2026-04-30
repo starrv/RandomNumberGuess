@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import "./globals.css";
+import "./css/globals.css";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,7 +23,7 @@ export default function RootLayout({
       className={roboto.className}
     >
       <head>
-        <link rel="icon" href="/icon.png" sizes="16x16" />
+        <link rel="icon" href="/images/icon.png" sizes="128x128" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
