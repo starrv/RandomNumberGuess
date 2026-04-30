@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent} from 'react';
+import { useState, useRef, RefObject, ChangeEvent} from 'react';
 
 let timer: any;
 
@@ -15,45 +15,54 @@ function App() {
   const [randNum,setRandNum]=useState(0);
   const [userInput,setUserInput]=useState("0");
 
+  const tokAudio:any=useRef(null);
+  const alarmAudio:any=useRef(null);
+  const wonAudio:any=useRef(null);
+  const userInteracted:RefObject<boolean>=useRef(false);
+
   const title="Random Number Guess";
   const timeOutMsg="Time Is Up!!";
   const wonMsg="You Won!!";
   const tooHighMsg="Too High";
   const tooLowMsg="Too Low";
   const rangeErrorMsg= `Random number must be between ${min} and ${max} inclusive`;
-  let feedback;
+  let feedback:string="";
   let feedbackCSSClasses="m-2";
 
-  if(randNum<min || randNum>max){
-    throw RangeError(rangeErrorMsg);
-  }
-  
-  if(count<=0 || parseInt(userInput)===randNum){
-    endGame();
-  } 
-  if(count<=0){
-    feedback=timeOutMsg;
-  }
-  else{
-    if(count!==timerLimit){
-      if(parseInt(userInput)>randNum){
-        feedback=tooHighMsg;
-        feedbackCSSClasses="m2 text-red-500";
-      }
-      else if(parseInt(userInput)<randNum){
-        feedback=tooLowMsg;
-        feedbackCSSClasses="m2 text-red-500";
-      }
-      else if(parseInt(userInput)===randNum){
-        feedback=wonMsg;
-        feedbackCSSClasses="m2 text-green-500";
-      }
+  if(userInteracted.current){
+    if(randNum<min || randNum>max){
+      throw RangeError(rangeErrorMsg);
+    }
+    
+    if(count<=0 || parseInt(userInput)===randNum){
+      endGame();
+    } 
+    if(count<=0){
+      feedback=timeOutMsg;
     }
     else{
-      startGame();
+      if(count!==timerLimit){
+        if(parseInt(userInput)>randNum){
+          feedback=tooHighMsg;
+          feedbackCSSClasses="m2 text-red-500";
+        }
+        else if(parseInt(userInput)<randNum){
+          feedback=tooLowMsg;
+          feedbackCSSClasses="m2 text-red-500";
+        }
+        else if(parseInt(userInput)===randNum){
+          feedback=wonMsg;
+          feedbackCSSClasses="m2 text-green-500";
+        }
+      }
+      else{
+        startGame();
+      }
     }
   }
   
+  console.log(feedback);
+
   return (
     <div className="text-center">
        <header className="mb-4 bg-orange-500">
@@ -85,20 +94,25 @@ function App() {
             <button className="border rounded-sm bg-green-500 cursor-pointer m-2 p-2" onClick={initGame}>Start</button>
           </div>
           <div className="col m-2">
-            <button className="border rounded-sm bg-red-500 cursor-pointer m-2 p-2" onClick={endGame}>Stop</button>
+            <button className="border rounded-sm bg-red-500 cursor-pointer m-2 p-2" onClick={userEndGame}>Stop</button>
           </div>
         </div>
+        <audio ref={alarmAudio} src="./audio/alarm.wav"></audio>
+        <audio ref={wonAudio} src="./audio/won.wav"></audio>
+        <audio ref={tokAudio} src="./audio/tok.mp3"></audio>
       </main>
     </div>
    
   );
 
   function initGame(){
+    if(!userInteracted.current) userInteracted.current=true;
     resetGame();
   }
 
   function countdown(){
     setCount(count=>count-1);
+    tokAudio.current.play();
   }
 
   function setRandomNumber(){
@@ -119,9 +133,21 @@ function App() {
   }
 
   function endGame(){
-    console.log("ending game....");
     clearInterval(timer);
     timer=undefined;
+    if(userInteracted.current){
+      if(count<=0){
+        alarmAudio.current.play();
+      }
+      else if(parseInt(userInput)===randNum){
+        wonAudio.current.play();
+      }
+    }
+  }
+
+  function userEndGame(){
+    if(userInteracted.current) userInteracted.current=false;
+    endGame();
   }
 
   function provideFeedback(e:ChangeEvent<HTMLInputElement>){
