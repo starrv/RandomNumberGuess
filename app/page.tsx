@@ -13,7 +13,7 @@ function App() {
 
   const [count,setCount]=useState(timerLimit);
   const [randNum,setRandNum]=useState(0);
-  const [userInput,setUserInput]=useState("0");
+  const [userInput,setUserInput]=useState("");
 
   const tokAudio:any=useRef(null);
   const alarmAudio:any=useRef(null);
@@ -72,11 +72,11 @@ function App() {
       <main className="m-4">
         <header className="m-4">
           <h2 className="text-2xl m-2">
-            Guess the interger from {min} to {max}
+            Guess the randomly generated interger from {min} to {max}
           </h2>
         </header>
         <p className={feedbackCSSClasses}>{feedback}</p>
-        <p className="m-2">{count}</p>
+        <p className="m-2">Time Remaining: {count}</p>
         <div className="row m-2">
           <div className="col m-2">
             <label htmlFor='userInputBox'>
@@ -84,7 +84,7 @@ function App() {
             </label>
           </div>
           <div className="col m-2">
-              <input className="border rounded-sm text-center m-2 p-2" type="number" id="userInputBox" name="userInputBox" min={min} max={max} onChange={provideFeedback} value={userInput} />
+              <input className="border rounded-sm text-center m-2 p-2" type="number" id="userInputBox" name="userInputBox" min={min} max={max} onChange={provideFeedback} value={userInput} disabled={timer ? false : true} />
           </div>
         </div>
         <hr className="m-2" />
@@ -94,6 +94,9 @@ function App() {
           </div>
           <div className="col m-2">
             <button className="border rounded-sm bg-red-500 cursor-pointer m-2 p-2" onClick={userEndGame}>Stop</button>
+          </div>
+          <div className="col m-2">
+            <button className="border rounded-sm bg-yellow-500 cursor-pointer m-2 p-2" onClick={resetInput} disabled={timer ? false : true}>Reset</button>
           </div>
         </div>
         <audio ref={alarmAudio} src="./audio/alarm.wav"></audio>
@@ -111,7 +114,23 @@ function App() {
 
   function countdown(){
     setCount(count=>count-1);
-    tokAudio.current.play();
+    playAudio(tokAudio.current);
+  }
+
+  async function playAudio(audio:HTMLAudioElement){
+    audio.load();
+    try{
+      await audio.play();
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  function stopAudio(){
+    alarmAudio.current.pause();
+    tokAudio.current.pause();
+    wonAudio.current.pause();
   }
 
   function setRandomNumber(){
@@ -123,8 +142,14 @@ function App() {
   }
 
   function resetGame(){
+    resetInput();
     setCounter();
     setRandomNumber();
+    stopAudio();
+  }
+
+  function resetInput(){
+    setUserInput("");
   }
 
   function startGame(){
@@ -136,11 +161,14 @@ function App() {
     timer=undefined;
     if(userInteracted.current){
       if(count<=0){
-        alarmAudio.current.play();
+        playAudio(alarmAudio.current);
       }
       else if(parseInt(userInput)===randNum){
-        wonAudio.current.play();
+        playAudio(wonAudio.current);
       }
+    }
+    else{
+      stopAudio();
     }
   }
 
