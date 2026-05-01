@@ -60,8 +60,6 @@ function App() {
       }
     }
   }
-  
-  console.log(feedback);
 
   return (
     <div className="text-center">
