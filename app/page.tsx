@@ -88,14 +88,14 @@ function App() {
           </div>
         </div>
         <hr className="m-2" />
-        <div className="row m-2">
-          <div className="col m-2">
+        <div className="flex justify-center my-2">
+          <div className="m-2">
             <button className="border rounded-sm bg-yellow-500 cursor-pointer m-2 p-2" onClick={resetInput} disabled={timer ? false : true}>Reset</button>
           </div>
-          <div className="col m-2">
+          <div className="m-2">
             <button className="border rounded-sm bg-green-500 cursor-pointer m-2 p-2" onClick={initGame}>Start</button>
           </div>
-          <div className="col m-2">
+          <div className="m-2">
             <button className="border rounded-sm bg-red-500 cursor-pointer m-2 p-2" onClick={userEndGame}>Stop</button>
           </div>
         </div>
