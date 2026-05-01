@@ -39,6 +39,7 @@ function App() {
     } 
     if(count<=0){
       feedback=timeOutMsg;
+      feedbackCSSClasses="m2 text-red-500";
     }
     else{
       if(count!==timerLimit){
