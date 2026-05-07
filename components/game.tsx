@@ -4,8 +4,6 @@ import { useState, useRef, RefObject, ChangeEvent} from 'react';
 
 function Game({timer}:{timer:any}) {
 
-  console.log(timer);
-
   const intervalTime=1000;
   const timerLimit=60;
   const max=500;
@@ -169,6 +167,7 @@ function Game({timer}:{timer:any}) {
     }
     else{
       stopAudio();
+      setUserInput("");
     }
   }
 
